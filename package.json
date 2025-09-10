@@ -21,7 +21,7 @@
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "pdfjs-dist": "^3.11.174",
+    "pdfjs-dist": "^3.4.120",
     "react-hook-form": "^7.62.0",
     "react-pdf": "^10.1.0",
     "react-router-dom": "^6.30.1",
