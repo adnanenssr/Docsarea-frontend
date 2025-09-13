@@ -11,7 +11,7 @@ function PaperDetails(props ) {
     
   return (
         <Stack spacing={3} sx={{padding :'32px'}} >
-            <Box sx={{ alignSelf: 'flex-start'}}>
+            {props.theme && <Box sx={{ alignSelf: 'flex-start'}}>
         <Chip label = {props.theme}
         sx={{
             
@@ -26,7 +26,7 @@ function PaperDetails(props ) {
                 border: '1px solid #c4b5fd'
                               
         }}/>
-        </Box>
+        </Box>}
         <Typography variant='h1' sx={{
                             fontFamily: "'Inter', sans-serif",
                             fontWeight: 700,
@@ -48,11 +48,12 @@ function PaperDetails(props ) {
                             width:'75%'
                         }}> {props.description} </Typography>
 
-
+                       {props.authors &&
                        <Box>
                         <Typography variant='caption' sx={{
                             fontSize :'15px'
                         }} >Research Authors :</Typography>
+                        
                         <Box display={'flex'} sx={{flexDirection :'row' , marginTop :'8px'}}>
                         {
                         props.authors.map((author , index) => (
@@ -63,7 +64,7 @@ function PaperDetails(props ) {
                             </div>
                         ))}
 
-                        </Box></Box>
+                        </Box></Box>}
                            
                          
         </Stack>

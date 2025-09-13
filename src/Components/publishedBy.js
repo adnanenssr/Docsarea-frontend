@@ -5,8 +5,8 @@ function PublishedBy(props) {
   return (
     <Box sx={{ padding :'16px'}}>
         <Stack spacing={1.5} sx={{alignItems :'center'}}>
-            <Avatar variant='rounded'>{props.username.slice(0,1).toUpperCase()}</Avatar>
-            <Typography>@{props.username}</Typography>
+            {props.name && <Avatar variant='rounded'>{props.name.slice(0,1).toUpperCase()}</Avatar>}
+            <Typography>@{props.name}</Typography>
             <Box display={'flex'} sx={{ flexDirection :'row'}}>
                 <Button>Follow</Button>
                 <Button>Message</Button>
