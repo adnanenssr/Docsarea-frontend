@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Worker } from '@react-pdf-viewer/core';
 // Core viewer
 import { Viewer } from '@react-pdf-viewer/core';
@@ -10,10 +10,39 @@ import { toolbarPlugin, type ToolbarSlot, type TransformToolbarSlot } from '@rea
 
 
 interface PdfViewerProps {
-    fileUrl: string;
+    fileId: string;
+    counter: number ;
 }
 
-const PdfViewer: React.FC<PdfViewerProps> = ({ fileUrl }) => {
+
+const PdfViewer: React.FC<PdfViewerProps> = ({ fileId , counter }) => {
+
+    const [pdfUrl, setPdfUrl] = useState(null);
+    useEffect(() => {
+        if (!fileId) {
+    console.warn("No fileId provided to PdfViewer");
+    return;
+  }
+
+  const fetchPdf = async () => {
+    const res = await fetch(`http://localhost:8082/file/${fileId}`, {
+      method: 'GET',
+      credentials: 'include', // 👈 this sends cookies along
+    });
+    console.log(res.headers.get("content-type"));
+
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch PDF: ${res.status}`);
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    setPdfUrl(url);
+  };
+
+  if (fileId) fetchPdf();
+}, [fileId , counter ]);
 
 
     const toolbarPluginInstance = toolbarPlugin();
@@ -41,13 +70,14 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ fileUrl }) => {
 
     return (
         <div key={'viewer'} style={{ height: '100vh' }}>
-            <Viewer 
-fileUrl={fileUrl}
+            {pdfUrl && <Viewer 
+fileUrl={pdfUrl}
 plugins={[
     // Register plugins
     defaultLayoutPluginInstance,
 ]}
-/>
+
+/>}
         </div>
     );
 };
