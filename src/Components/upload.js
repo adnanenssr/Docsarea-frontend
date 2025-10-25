@@ -39,7 +39,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 // The component for the file upload form
-export function UploadForm({ onClose , groupId }  ) {
+export function UploadForm({ onClose , groupId , r }  ) {
   const [authors, setAuthors] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -54,11 +54,9 @@ export function UploadForm({ onClose , groupId }  ) {
 
   const [uploadUrl , setUploadUrl] = useState("") ;
 
- useEffect(() => {if(groupId === undefined ) {
-    setUploadUrl(`http://localhost:8082/upload/${groupId}`) ;
-  }else{
-    setUploadUrl(`http://localhost:8082/upload`) ;
-  }}, [groupId])
+ useEffect(() => {
+    groupId ? setUploadUrl(`http://localhost:8082/upload/${groupId}`) :  setUploadUrl(`http://localhost:8082/upload`) ;
+  }, [groupId])
    
 
   // Initialize the form hook with default values
@@ -107,12 +105,13 @@ export function UploadForm({ onClose , groupId }  ) {
     console.log('Form data submitted:', formData);
     setSnackbarOpen(true); // Show a success message
     onClose(); // Close the dialog after submission
+    r(prev => prev + 1) ;
   };
   
   const fetchSuggestions = async (value , arr , setArr ) => {
     try {
       // Re-enabled the original fetch call to your localhost API
-      const response = await fetch(`https://localhost:8443/suggestions?value=${value}`, {
+      const response = await fetch(`http://localhost:8082/user/suggestions?value=${value}`, {
         method: "GET",
         
         credentials: 'include'
@@ -498,7 +497,7 @@ export function UploadForm({ onClose , groupId }  ) {
 }
 
 // The main component that manages the dialog
-export default function UploadDialog( groupId) {
+export default function UploadDialog( {groupId , r }) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
@@ -506,13 +505,13 @@ export default function UploadDialog( groupId) {
   };
 
   const handleClose = () => {
-    setOpen(true);
+    setOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Button onClick={handleOpen} variant="contained">
-        Open Upload Dialog
+        Add Paper 
       </Button>
       <Dialog 
         open={open} 
@@ -525,7 +524,7 @@ export default function UploadDialog( groupId) {
         }}
       >
         <DialogContent>
-          <UploadForm onClose={handleClose} groupId = {groupId}/>
+          <UploadForm onClose={handleClose} groupId = {groupId} r={r}/>
         </DialogContent>
       </Dialog>
     </div>

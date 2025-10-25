@@ -1,4 +1,5 @@
-import { Alert, Box, Button, Checkbox, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Checkbox, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
+import { Edit } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form';
 
@@ -267,9 +268,9 @@ function UpdateMember({groupId , username}) {
       <Box>
           
   
-      <Button onClick={handleOpen} variant="contained">
-              Open Upload Dialog
-            </Button>
+      <IconButton onClick={handleOpen} >
+              <Edit/>
+            </IconButton>
       <Dialog 
               open={open} 
               onClose={handleClose}

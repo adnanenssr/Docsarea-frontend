@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { TextField, Button, Stack, Box, Typography } from '@mui/material';
@@ -6,12 +6,43 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 
 export default function Login() {
+
+  const [searchParams] = useSearchParams();
+
   const { handleSubmit, control, formState: { errors } } = useForm();
   const [failed , setFailed] = useState(false) ;
+  const navigate = useNavigate() ;
+
+  const redirect = searchParams.get('redirect') || '/u/dashboard';
+  
+  useEffect(() => {
+    const loader = async () => {
+      try{
+    const response = await fetch("http://localhost:8082/authenticated" ,{
+      method: "GET", // HTTP method
+      credentials: 'include' ,
+    });
+    if (response.ok){
+        navigate(redirect); ;
+    }
+
+    
+    
+
+    
+}
+catch(e){
+}
+    }
+
+    loader() ;
+
+  }, [])
+
   
   
 
@@ -33,9 +64,11 @@ export default function Login() {
     if (!response.ok){
         setFailed(true) ;
     }
-    const res = await response.text();
 
-    console.log(res);
+    navigate(redirect);
+    
+
+    
 }
 catch(e){
     setFailed(true) ;

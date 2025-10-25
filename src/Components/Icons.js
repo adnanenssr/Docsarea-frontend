@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconButton, Box } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
 // Custom Download Icon
 const DownloadIcon = ({ color = "currentColor", size = 20 }) => (
@@ -112,9 +113,57 @@ const CopyrightIcon = ({ color = "currentColor", size = 20 }) => (
 );
 
 // Main Component with all icons
-const ModernActionIcons = () => {
+const ModernActionIcons = ({fileId}) => {
+
+
+
+
   const [starFilled, setStarFilled] = useState(false);
   const [bookmarkFilled, setBookmarkFilled] = useState(false);
+
+  const onDownload = async () => {
+    window.location.href = `http://localhost:8082/file/download/${fileId}`;
+  }
+  
+
+  const onBookmark = async () => {
+    if(!bookmarkFilled){
+    const response = await fetch(`http://localhost:8082/add/bookmark/${fileId}` , {
+      method : "POST" , 
+      credentials : "include"
+    })
+    if(response.ok){
+      setBookmarkFilled(true) ;
+    }
+    }
+    else {
+      const response = await fetch(`http://localhost:8082/remove/bookmark/${fileId}` , {
+      method : "DELETE" , 
+      credentials : "include"
+    })
+    if(response.ok){
+      setBookmarkFilled(false) ;
+    }
+
+    }
+  }
+
+  useEffect(() => {
+    const isBookmarked = async () => {
+      const response = await fetch(`http://localhost:8082/get/exist/bookmark/${fileId}` , {
+        method : "GET" , 
+        credentials : "include"
+      })
+      if(!response.ok){
+        throw new Error("could not fetch bookmark") ;
+      }
+      const data = await response.json() ;
+      if(data){
+        setBookmarkFilled(data) ;
+      }
+    } 
+    isBookmarked() ;
+  },[])
 
   const iconButtonStyle = {
     width: 40,
@@ -150,7 +199,7 @@ const ModernActionIcons = () => {
 
   return (
     <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', p: 0.5 }}>
-      <IconButton sx={iconButtonStyle}>
+      <IconButton sx={iconButtonStyle} onClick={() => onDownload()}>
         <DownloadIcon size={20} />
       </IconButton>
       
@@ -175,7 +224,12 @@ const ModernActionIcons = () => {
             transform: 'translateY(-1px)'
           }
         }}
-        onClick={() => setBookmarkFilled(!bookmarkFilled)}
+        onClick={() => {
+
+          onBookmark() ;
+          setBookmarkFilled(!bookmarkFilled)
+
+        }}
       >
         <BookmarkIcon size={20} filled={bookmarkFilled} />
       </IconButton>

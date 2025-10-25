@@ -1,4 +1,3 @@
-import { PrivacyTipTwoTone } from '@mui/icons-material';
 import { Alert, Box, Button, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, Snackbar, Stack, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -146,9 +145,9 @@ function AddGroupForm({onClose}) {
                 label="OPEN" 
               />
               <FormControlLabel 
-                value="CLOSE" 
+                value="CLOSED" 
                 control={<Radio />} 
-                label="CLOSE" 
+                label="CLOSED" 
               />
               <FormControlLabel 
                 value="REQUESTED" 
@@ -181,8 +180,8 @@ function AddGroupForm({onClose}) {
       exclusive
       aria-label="text formatting"
     >
-      <ToggleButton value="bold">Private</ToggleButton>
-      <ToggleButton value="italic">Public</ToggleButton>
+      <ToggleButton value="PRIVATE">Private</ToggleButton>
+      <ToggleButton value="PUBLIC">Public</ToggleButton>
     </ToggleButtonGroup>
         <Box>
         <Button type="submit" variant="contained" color="primary">
@@ -204,14 +203,14 @@ function AddGroup() {
       };
     
       const handleClose = () => {
-        setOpen(true);
+        setOpen(false);
       }
   return (
     <Box>
         
 
     <Button onClick={handleOpen} variant="contained">
-            Open Upload Dialog
+            Create Group
           </Button>
     <Dialog 
             open={open} 

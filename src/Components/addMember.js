@@ -1,18 +1,12 @@
-import { Alert, Box, Button, Checkbox, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, FormLabel, IconButton, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { CheckIcon, CopyIcon } from 'lucide-react';
+import { Alert, Box, Button, Checkbox, Dialog, DialogContent, FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form';
-import { ContentCopy } from '@mui/icons-material';
 
-function CreateLinkForm({ setLink , setOpenLink , groupId , onClose}) {
+function AddMemberForm({groupId , onClose}) {
 
     const {control , handleSubmit , reset , setValue , watch, formState : {errors}} = useForm({
     defaultValues: {
-      expirationDate :"" ,
+      username: "",
       role: "MEMBER",
       uploadPermission: "REVIEWED",
       fileReview: false,
@@ -26,12 +20,10 @@ function CreateLinkForm({ setLink , setOpenLink , groupId , onClose}) {
     const [snackbarOpen , setSnackbarOpen] = useState(false) ;
     const [error , setError] = useState(false) ;
     const [success , setSuccess] = useState(false) ;
-    const [open , setOpen] = useState(false) ;
     
     const onSubmit = async (data) => {
-        const linkInfo = {
-            description : data.description ,
-            expiresAt : data.expiresAt ,
+        const memberInfo = {
+            username : data.username ,
             role : data.role ,
             reviewFile : data.fileReview ,
             reviewJoinRequest : data.joinRequestReview ,
@@ -39,28 +31,21 @@ function CreateLinkForm({ setLink , setOpenLink , groupId , onClose}) {
             invitePermission : data.invitePermission
         }
         try{
-        const response = await fetch(`http://localhost:8082/create/invitation/${groupId}` , {
+        const response = await fetch(`http://localhost:8082/${groupId}/member/add` , {
             method : "POST" ,
             credentials : "include" ,
             headers : {
                 "content-type" : "application/json"
             } ,
-            body : JSON.stringify(linkInfo)
+            body : JSON.stringify(memberInfo)
         }) ;
         if(!response.ok){
             throw new Error("could not add member to group , Please try again later") ;
         }
-        const data = await response.json() ;
-        if(data){
-        setLink(data.id)
         setSuccess(true) ;
         setError(false) ;
         setSnackbarOpen(true) ;
-        setOpenLink(true) ;
         onClose() ;
-        }
-        
-        
     }catch (err){
         setSuccess(false) ;
         setError(true) ;
@@ -117,26 +102,23 @@ function CreateLinkForm({ setLink , setOpenLink , groupId , onClose}) {
            
             margin : "13px" ,
         }}>
-            <Controller 
-              name="description" 
-              control={control}
-              render={({field}) =>
-                <TextField {...field} label="description" />
-              }
-              />
-
-            <Controller 
-              name="expiresAt" 
-              control={control}
-              render={({field}) =>
-                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                 <DemoContainer components={['DatePicker']}>
-                 <DatePicker {...field} label="Choose Expiration Date" />
-                 </DemoContainer>
-                 </LocalizationProvider>
-              }
-              />
-            
+            <Box>
+            <Controller
+                    name='username'
+                    control = {control}
+                    rules={{required: "please specify a user"}}
+                    render={({field}) => (
+                        <TextField
+                        {...field}
+                        label="member"
+                        variant="outlined"
+                        fullWidth
+                        error={!!errors.name}
+                        helperText={errors.name ? errors.name.message : ''}
+                        />
+                    )}
+                    />
+                    </Box>
 
 
 
@@ -234,72 +216,18 @@ function CreateLinkForm({ setLink , setOpenLink , groupId , onClose}) {
                         />}
 
                         <Box>
-                        <Button type='submit'>Create Link</Button>
+                        <Button type='submit'>add Member</Button>
                         </Box>
 
             
         </Stack>
     </Box>
-    
     </Box>
   )
 }
 
-function GetLink({id , setOpenLink}){
-    const [open , setOpen] = useState(false) ;
-    const link = `http://localhost:8082/invitation/${id}` ;
-    const [copy , setCopy] = useState(false) ;
-    
-    useEffect (() => {
-        setOpen(true) ;
-        setCopy(false) ;
-    },[])
-
-    const handleClose = () => {
-        
-        setOpen(false) ;
-        setOpenLink(false) ;
-    }
-
-    const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(link);
-      
-        
-      
-
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-    }
-    setCopy(true)
-    setTimeout(() => {
-        setCopy(false);
-       }, 2000);
-  };
-
-    return(
-        <Snackbar  sx={{width : '70vw'}}
-            open={open} 
-            onClose={handleClose}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            autoHideDuration={6000}
-          >
-            
-                <Box>
-              <Alert icon={false} onClose={handleClose}>Link : {link} 
-                <IconButton onClick={handleCopy}>
-                    {copy ? <CheckIcon/> : <CopyIcon/> }
-                </IconButton></Alert>
-              </Box>
-            
-          </Snackbar>
-    )
-}
-
-function CreateLink({groupId}) {
+function AddMember({groupId}) {
     const [open, setOpen] = useState(false);
-    const [openLink , setOpenLink] = useState(false) ;
-    const [linkId , setLinkId] = useState("") ;
     
       const handleOpen = () => {
         setOpen(true);
@@ -313,7 +241,7 @@ function CreateLink({groupId}) {
         
 
     <Button onClick={handleOpen} variant="contained">
-            Create Invitation Link
+            Add Member
           </Button>
     <Dialog 
             open={open} 
@@ -323,15 +251,13 @@ function CreateLink({groupId}) {
           >
             <DialogContent>
                 <Box>
-              <CreateLinkForm setLink={setLinkId} setOpenLink = {setOpenLink} groupId = {groupId} onClose={handleClose} />
+              <AddMemberForm groupId = {groupId} onClose={handleClose} />
               </Box>
             </DialogContent>
           </Dialog>
-          {openLink && <GetLink id={linkId} setOpenLink={setOpenLink} />}
     </Box>
-    
 
   )
 }
 
-export default CreateLink
+export default AddMember
